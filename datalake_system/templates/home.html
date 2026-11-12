@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}Home - Data Lake System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8 text-center">
+            <h1 class="display-4 mb-4">AWS Data Lake Management System</h1>
+            <p class="lead mb-4">
+                Simulate AWS Data Lake operations with S3, Glue, and Athena.
+                Perfect for learning and practicing data lake concepts.
+            </p>
+            
+            <div class="row mb-5">
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <i class="fas fa-folder fa-2x text-primary mb-3"></i>
+                            <h5 class="card-title">S3 Storage</h5>
+                            <p class="card-text">Create buckets and upload files</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <i class="fas fa-spider fa-2x text-warning mb-3"></i>
+                            <h5 class="card-title">Glue Crawler</h5>
+                            <p class="card-text">Discover and catalog data</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <i class="fas fa-search fa-2x text-info mb-3"></i>
+                            <h5 class="card-title">Athena Queries</h5>
+                            <p class="card-text">Run SQL queries on data</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            {% if user.is_authenticated %}
+                <div class="d-grid gap-2 d-md-block">
+                    <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg px-5">
+                        <i class="fas fa-tachometer-alt"></i> Go to Dashboard
+                    </a>
+                    <a href="{% url 'upload_file' %}" class="btn btn-success btn-lg px-5">
+                        <i class="fas fa-upload"></i> Upload Files
+                    </a>
+                </div>
+            {% else %}
+                <div class="d-grid gap-2 d-md-block">
+                    <a href="{% url 'login' %}" class="btn btn-primary btn-lg px-5">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                    <a href="{% url 'register' %}" class="btn btn-outline-primary btn-lg px-5">
+                        <i class="fas fa-user-plus"></i> Register
+                    </a>
+                </div>
+            {% endif %}
+            
+            <hr class="my-5">
+            
+            <div class="row text-start">
+                <div class="col-md-6">
+                    <h4>Features:</h4>
+                    <ul>
+                        <li>Create and manage S3 buckets</li>
+                        <li>Upload CSV, JSON, and text files</li>
+                        <li>Run Glue crawlers to discover data</li>
+                        <li>Execute Athena SQL queries</li>
+                        <li>View query results and analysis</li>
+                        <li>Real AWS or local simulation mode</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h4>Getting Started:</h4>
+                    <ol>
+                        <li>Register or login to your account</li>
+                        <li>Create your first S3 bucket</li>
+                        <li>Upload sample data files</li>
+                        <li>Run a Glue crawler to catalog data</li>
+                        <li>Execute your first Athena query</li>
+                        <li>Analyze the results</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<center><marquee><p>@copyright reservered by Mansoor Vali 2026</p></center></marquee>
+{% endblock %}

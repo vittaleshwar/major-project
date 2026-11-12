@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% block title %}{{ file.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-file
+                        {% if file.file_type == 'csv' %} text-primary
+                        {% elif file.file_type == 'json' %} text-success
+                        {% else %} text-secondary{% endif %}">
+                    </i>
+                    File: {{ file.name }}
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>File Details</h5>
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>Bucket:</th>
+                                <td>{{ file.bucket.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>File Type:</th>
+                                <td>
+                                    <span class="badge bg-{% if file.file_type == 'csv' %}primary
+                                        {% elif file.file_type == 'json' %}success
+                                        {% else %}secondary{% endif %}">
+                                        {{ file.file_type|upper }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Size:</th>
+                                <td>{{ file.size_mb }} MB</td>
+                            </tr>
+                            <tr>
+                                <th>Uploaded:</th>
+                                <td>{{ file.upload_date|date:"Y-m-d H:i:s" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Upload Mode:</th>
+                                <td>
+                                    {% if file.is_real_aws %}
+                                    <span class="badge bg-success">AWS S3</span>
+                                    {% else %}
+                                    <span class="badge bg-info">Local Simulation</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h5>Quick Actions</h5>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary" onclick="analyzeFile()">
+                                <i class="fas fa-chart-bar"></i> Analyze Data
+                            </button>
+                            <button class="btn btn-success" onclick="runQueryOnFile()">
+                                <i class="fas fa-search"></i> Query This File
+                            </button>
+                            <a href="{% url 'upload_file' %}" class="btn btn-info">
+                                <i class="fas fa-upload"></i> Upload Similar File
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if metadata %}
+                <hr>
+                <h5>File Analysis</h5>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6>Columns</h6>
+                                {% if metadata.columns %}
+                                <ul class="list-unstyled">
+                                    {% for column in metadata.columns|slice:":5" %}
+                                    <li><code>{{ column }}</code></li>
+                                    {% endfor %}
+                                    {% if metadata.columns|length > 5 %}
+                                    <li><small>... and {{ metadata.columns|length|add:"-5" }} more</small></li>
+                                    {% endif %}
+                                </ul>
+                                {% else %}
+                                <p class="text-muted">No columns detected</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6>Statistics</h6>
+                                <p><strong>Rows:</strong> {{ metadata.row_count|default:"Unknown" }}</p>
+                                <p><strong>Analyzed:</strong> {{ metadata.analyzed_at|date:"Y-m-d H:i" }}</p>
+                                {% if file.description %}
+                                <p><strong>Description:</strong> {{ file.description }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6>Sample Data</h6>
+                                {% if metadata.sample_data %}
+                                <div style="max-height: 200px; overflow-y: auto;">
+                                    <pre class="small bg-light p-2">{{ metadata.sample_data|slice:":3" }}</pre>
+                                </div>
+                                {% else %}
+                                <p class="text-muted">No sample data available</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if file_content %}
+                <hr>
+                <h5>File Preview</h5>
+                <div class="card">
+                    <div class="card-body">
+                        <pre style="max-height: 300px; overflow-y: auto;">{{ file_content }}</pre>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'list_files' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Files
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function analyzeFile() {
+    const tableName = "{{ file.name|slugify }}".replace(/-/g, '_');
+    const columns = {% if metadata.columns %}{{ metadata.columns|safe }}{% else %}[]{% endif %};
+    
+    let analysis = "File Analysis:\n\n";
+    analysis += `Table Name: ${tableName}\n`;
+    analysis += `Rows: {{ metadata.row_count|default:"Unknown" }}\n`;
+    analysis += `Columns: ${columns.length}\n\n`;
+    
+    if (columns.length > 0) {
+        analysis += "Column Analysis:\n";
+        columns.forEach((col, index) => {
+            analysis += `${index + 1}. ${col}\n`;
+        });
+    }
+    
+    alert(analysis);
+}
+
+function runQueryOnFile() {
+    const tableName = "{{ file.name|slugify }}".replace(/-/g, '_');
+    const query = `SELECT * FROM ${tableName} LIMIT 10;`;
+    window.location.href = `{% url 'execute_query' %}?query=${encodeURIComponent(query)}`;
+}
+</script>
+{% endblock %}

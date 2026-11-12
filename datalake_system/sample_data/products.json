@@ -1,0 +1,242 @@
+[
+  {
+    "product_id": "P001",
+    "name": "Product 1",
+    "category": "Books",
+    "price": 1809.49,
+    "stock": 501,
+    "rating": 3.6
+  },
+  {
+    "product_id": "P002",
+    "name": "Product 2",
+    "category": "Sports",
+    "price": 397.42,
+    "stock": 2,
+    "rating": 2.0
+  },
+  {
+    "product_id": "P003",
+    "name": "Product 3",
+    "category": "Sports",
+    "price": 1155.51,
+    "stock": 186,
+    "rating": 2.1
+  },
+  {
+    "product_id": "P004",
+    "name": "Product 4",
+    "category": "Books",
+    "price": 1634.2,
+    "stock": 14,
+    "rating": 3.0
+  },
+  {
+    "product_id": "P005",
+    "name": "Product 5",
+    "category": "Toys",
+    "price": 271.87,
+    "stock": 555,
+    "rating": 4.6
+  },
+  {
+    "product_id": "P006",
+    "name": "Product 6",
+    "category": "Toys",
+    "price": 1178.86,
+    "stock": 403,
+    "rating": 4.3
+  },
+  {
+    "product_id": "P007",
+    "name": "Product 7",
+    "category": "Toys",
+    "price": 1582.98,
+    "stock": 905,
+    "rating": 2.7
+  },
+  {
+    "product_id": "P008",
+    "name": "Product 8",
+    "category": "Clothing",
+    "price": 1757.54,
+    "stock": 764,
+    "rating": 3.3
+  },
+  {
+    "product_id": "P009",
+    "name": "Product 9",
+    "category": "Books",
+    "price": 274.22,
+    "stock": 119,
+    "rating": 1.2
+  },
+  {
+    "product_id": "P010",
+    "name": "Product 10",
+    "category": "Books",
+    "price": 1231.58,
+    "stock": 470,
+    "rating": 2.2
+  },
+  {
+    "product_id": "P011",
+    "name": "Product 11",
+    "category": "Sports",
+    "price": 598.79,
+    "stock": 814,
+    "rating": 2.7
+  },
+  {
+    "product_id": "P012",
+    "name": "Product 12",
+    "category": "Toys",
+    "price": 390.43,
+    "stock": 256,
+    "rating": 1.1
+  },
+  {
+    "product_id": "P013",
+    "name": "Product 13",
+    "category": "Toys",
+    "price": 1377.93,
+    "stock": 192,
+    "rating": 1.1
+  },
+  {
+    "product_id": "P014",
+    "name": "Product 14",
+    "category": "Home",
+    "price": 663.79,
+    "stock": 384,
+    "rating": 4.1
+  },
+  {
+    "product_id": "P015",
+    "name": "Product 15",
+    "category": "Sports",
+    "price": 228.9,
+    "stock": 824,
+    "rating": 2.8
+  },
+  {
+    "product_id": "P016",
+    "name": "Product 16",
+    "category": "Toys",
+    "price": 411.98,
+    "stock": 701,
+    "rating": 4.9
+  },
+  {
+    "product_id": "P017",
+    "name": "Product 17",
+    "category": "Clothing",
+    "price": 331.85,
+    "stock": 634,
+    "rating": 2.0
+  },
+  {
+    "product_id": "P018",
+    "name": "Product 18",
+    "category": "Electronics",
+    "price": 1190.97,
+    "stock": 898,
+    "rating": 1.0
+  },
+  {
+    "product_id": "P019",
+    "name": "Product 19",
+    "category": "Sports",
+    "price": 1779.67,
+    "stock": 119,
+    "rating": 2.0
+  },
+  {
+    "product_id": "P020",
+    "name": "Product 20",
+    "category": "Toys",
+    "price": 1371.63,
+    "stock": 518,
+    "rating": 2.5
+  },
+  {
+    "product_id": "P021",
+    "name": "Product 21",
+    "category": "Electronics",
+    "price": 196.17,
+    "stock": 823,
+    "rating": 4.1
+  },
+  {
+    "product_id": "P022",
+    "name": "Product 22",
+    "category": "Sports",
+    "price": 178.64,
+    "stock": 756,
+    "rating": 1.1
+  },
+  {
+    "product_id": "P023",
+    "name": "Product 23",
+    "category": "Electronics",
+    "price": 87.39,
+    "stock": 399,
+    "rating": 4.1
+  },
+  {
+    "product_id": "P024",
+    "name": "Product 24",
+    "category": "Toys",
+    "price": 1473.93,
+    "stock": 93,
+    "rating": 4.1
+  },
+  {
+    "product_id": "P025",
+    "name": "Product 25",
+    "category": "Books",
+    "price": 364.51,
+    "stock": 628,
+    "rating": 1.1
+  },
+  {
+    "product_id": "P026",
+    "name": "Product 26",
+    "category": "Clothing",
+    "price": 1128.23,
+    "stock": 950,
+    "rating": 1.2
+  },
+  {
+    "product_id": "P027",
+    "name": "Product 27",
+    "category": "Electronics",
+    "price": 170.91,
+    "stock": 940,
+    "rating": 2.6
+  },
+  {
+    "product_id": "P028",
+    "name": "Product 28",
+    "category": "Books",
+    "price": 74.06,
+    "stock": 533,
+    "rating": 3.9
+  },
+  {
+    "product_id": "P029",
+    "name": "Product 29",
+    "category": "Clothing",
+    "price": 1358.3,
+    "stock": 714,
+    "rating": 1.8
+  },
+  {
+    "product_id": "P030",
+    "name": "Product 30",
+    "category": "Clothing",
+    "price": 1611.86,
+    "stock": 294,
+    "rating": 1.1
+  }
+]

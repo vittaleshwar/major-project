@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+{% block title %}Crawler Results{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-spider text-warning"></i>
+                    Glue Crawler Results: {{ crawler.name }}
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-{% if crawler.status == 'COMPLETED' %}success{% else %}warning{% endif %}">
+                    <h5>
+                        <i class="fas fa-{% if crawler.status == 'COMPLETED' %}check-circle{% else %}sync-alt{% endif %}"></i>
+                        Crawler Status: {{ crawler.status }}
+                    </h5>
+                    <p class="mb-0">
+                        <strong>Bucket:</strong> {{ crawler.bucket.name }}<br>
+                        <strong>Last Run:</strong> {{ crawler.last_run|date:"Y-m-d H:i:s" }}<br>
+                        <strong>Mode:</strong> 
+                        {% if crawler.is_real_aws %}
+                        <span class="badge bg-success">Real AWS</span>
+                        {% else %}
+                        <span class="badge bg-info">Simulated</span>
+                        {% endif %}
+                    </p>
+                </div>
+                
+                <h5 class="mb-3">Discovered Tables</h5>
+                {% if tables %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Table Name</th>
+                                <th>Format</th>
+                                <th>Records</th>
+                                <th>Columns</th>
+                                <th>Location</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for table in tables %}
+                            <tr>
+                                <td>
+                                    <i class="fas fa-table text-primary"></i>
+                                    <strong>{{ table.name }}</strong>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{% if table.file_format == 'csv' %}primary{% elif table.file_format == 'json' %}success{% elif table.file_format == 'parquet' %}warning{% else %}secondary{% endif %}">
+                                        {{ table.file_format|upper }}
+                                    </span>
+                                </td>
+                                <td>{{ table.record_count|floatformat:0 }}</td>
+                                <td>
+                                    {% if table.name == 'sales_data' %}
+                                    <span class="badge bg-info">9 columns</span>
+                                    {% elif table.name == 'customers_data' %}
+                                    <span class="badge bg-info">8 columns</span>
+                                    {% elif table.name == 'website_logs' %}
+                                    <span class="badge bg-info">10 columns</span>
+                                    {% else %}
+                                    <span class="badge bg-info">Multiple</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <small>
+                                        {% if crawler.is_real_aws %}
+                                        s3://{{ crawler.bucket.name }}/{{ table.name }}/
+                                        {% else %}
+                                        simulated://{{ crawler.bucket.name }}/{{ table.name }}/
+                                        {% endif %}
+                                    </small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">Ready for Query</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-4">
+                    <h5>Next Steps:</h5>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-search fa-2x text-info mb-3"></i>
+                                    <h6>Query the Data</h6>
+                                    <p class="small">Use Athena to analyze discovered tables</p>
+                                    <a href="{% url 'execute_query' %}" class="btn btn-outline-info btn-sm">
+                                        Execute Query
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-upload fa-2x text-success mb-3"></i>
+                                    <h6>Add More Data</h6>
+                                    <p class="small">Upload additional files to S3</p>
+                                    <a href="{% url 'upload_file' %}" class="btn btn-outline-success btn-sm">
+                                        Upload Files
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-redo fa-2x text-warning mb-3"></i>
+                                    <h6>Run Crawler Again</h6>
+                                    <p class="small">Re-crawl for new data</p>
+                                    <a href="{% url 'glue_crawler' %}" class="btn btn-outline-warning btn-sm">
+                                        Run Crawler
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h5>No Tables Discovered</h5>
+                    <p class="text-muted">
+                        The crawler didn't find any data files in the S3 bucket.
+                        Upload some data files and run the crawler again.
+                    </p>
+                    <a href="{% url 'upload_file' %}" class="btn btn-primary">
+                        <i class="fas fa-upload"></i> Upload Data Files
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sample Queries for Discovered Tables -->
+{% if tables %}
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Sample Athena Queries</h5>
+            </div>
+            <div class="card-body">
+                <p>Try these queries on your discovered tables:</p>
+                
+                <div class="row">
+                    {% for table in tables|slice:":3" %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">{{ table.name|title }} Table</h6>
+                            </div>
+                            <div class="card-body">
+                                {% if table.name == 'sales_data' %}
+                                <pre class="small bg-light p-2">SELECT * 
+FROM {{ table.name }} 
+LIMIT 10;</pre>
+                                <pre class="small bg-light p-2">SELECT region, 
+       SUM(total_amount) as revenue
+FROM {{ table.name }}
+GROUP BY region
+ORDER BY revenue DESC;</pre>
+                                {% elif table.name == 'customers_data' %}
+                                <pre class="small bg-light p-2">SELECT membership_tier,
+       COUNT(*) as customer_count,
+       AVG(total_spent) as avg_spending
+FROM {{ table.name }}
+GROUP BY membership_tier;</pre>
+                                {% elif table.name == 'website_logs' %}
+                                <pre class="small bg-light p-2">SELECT browser,
+       COUNT(*) as visits,
+       AVG(duration_seconds) as avg_time
+FROM {{ table.name }}
+GROUP BY browser
+ORDER BY visits DESC;</pre>
+                                {% else %}
+                                <pre class="small bg-light p-2">SELECT COUNT(*) as row_count
+FROM {{ table.name }};</pre>
+                                <pre class="small bg-light p-2">SELECT * 
+FROM {{ table.name }} 
+LIMIT 5;</pre>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="text-center mt-3">
+                    <a href="{% url 'execute_query' %}" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Try These Queries in Athena
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

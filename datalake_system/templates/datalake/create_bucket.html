@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Create S3 Bucket{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Create S3 Bucket</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Current Mode:</strong>
+                    {% if user.aws_config.use_real_aws %}
+                        Creating <span class="badge bg-success">Real AWS S3 Bucket</span>
+                    {% else %}
+                        Creating <span class="badge bg-info">Simulated S3 Bucket</span>
+                    {% endif %}
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_name" class="form-label">Bucket Name</label>
+                        {{ form.name }}
+                        <small class="form-text text-muted">
+                            Bucket names must be globally unique{% if user.aws_config.use_real_aws %} in AWS{% endif %}
+                        </small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_region" class="form-label">Region</label>
+                        {{ form.region }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus-circle"></i> Create Bucket
+                    </button>
+                    <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

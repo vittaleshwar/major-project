@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+{% block title %}AWS Configuration{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">
+        <i class="fas fa-cloud"></i>
+        AWS Configuration
+    </h2>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Configure AWS Connection</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="aws-config-form">
+                        {% csrf_token %}
+                        
+                        <!-- Mode Selection -->
+                        <div class="mb-4">
+                            <div class="form-check form-switch">
+                                {{ form.use_real_aws }}
+                                <label class="form-check-label" for="id_use_real_aws">
+                                    <strong>Enable Real AWS Connection</strong>
+                                </label>
+                            </div>
+                            <small class="text-muted">
+                                When enabled, the system will connect to your actual AWS account.
+                                When disabled, local simulation mode will be used.
+                            </small>
+                        </div>
+                        
+                        <!-- AWS Credentials (shown only when real AWS is enabled) -->
+                        <div id="aws-credentials-section" style="display: {% if form.instance.use_real_aws %}block{% else %}none{% endif %};">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_aws_access_key_id" class="form-label">AWS Access Key ID *</label>
+                                    {{ form.aws_access_key_id }}
+                                    <small class="text-muted">
+                                        Your AWS Access Key (starts with AKIA...)
+                                    </small>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_aws_secret_access_key" class="form-label">AWS Secret Access Key *</label>
+                                    {{ form.aws_secret_access_key }}
+                                    <small class="text-muted">
+                                        Your AWS Secret Access Key
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_aws_region" class="form-label">AWS Region *</label>
+                                {{ form.aws_region }}
+                                <small class="text-muted">
+                                    Select the AWS region where you want to create resources
+                                </small>
+                            </div>
+                            
+                            <!-- Test Connection Button -->
+                            <div class="mb-3">
+                                <button type="submit" class="btn btn-primary" name="test_connection">
+                                    <i class="fas fa-plug"></i> Test Connection
+                                </button>
+                                <button type="submit" class="btn btn-success" name="save_config">
+                                    <i class="fas fa-save"></i> Save Configuration
+                                </button>
+                                <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Cancel
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Local Mode Save Button -->
+                        <div id="local-mode-section" style="display: {% if not form.instance.use_real_aws %}block{% else %}none{% endif %};">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                <strong>Local Simulation Mode</strong>
+                                <p class="mb-0">The system will use simulated AWS services. No AWS account required.</p>
+                            </div>
+                            <button type="submit" class="btn btn-primary" name="save_config">
+                                <i class="fas fa-save"></i> Save Configuration
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- Connection Test Results -->
+                    {% if connection_status %}
+                    <div class="mt-4">
+                        <div class="alert alert-{% if connection_status.is_valid %}success{% else %}danger{% endif %}">
+                            <h5>
+                                <i class="fas fa-{% if connection_status.is_valid %}check-circle{% else %}exclamation-triangle{% endif %}"></i>
+                                Connection Test Results
+                            </h5>
+                            <p class="mb-1">{{ connection_status.message }}</p>
+                            {% if connection_status.account_id %}
+                            <p class="mb-0"><strong>AWS Account ID:</strong> {{ connection_status.account_id }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        {% if test_results %}
+                        <div class="alert alert-{% if test_results.full_access %}success{% else %}warning{% endif %}">
+                            <h6>Permission Check</h6>
+                            <p class="mb-0">{{ test_results.message }}</p>
+                            {% if test_results.bucket_count > 0 %}
+                            <p class="mb-0"><strong>S3 Buckets Found:</strong> {{ test_results.bucket_count }}</p>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <!-- Current Status -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0">Current Status</h6>
+                </div>
+                <div class="card-body">
+                    {% if current_config.use_real_aws and current_config.is_active %}
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        <strong>Connected to AWS</strong>
+                        <p class="mb-0 small">Region: {{ current_config.aws_region }}</p>
+                    </div>
+                    {% elif current_config.use_real_aws %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>AWS Configuration Incomplete</strong>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-laptop"></i>
+                        <strong>Local Simulation Mode</strong>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Step-by-Step Guide -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0">Getting AWS Credentials</h6>
+                </div>
+                <div class="card-body">
+                    <ol class="small mb-0">
+                        <li>Login to <a href="https://aws.amazon.com/" target="_blank">AWS Console</a></li>
+                        <li>Go to <strong>IAM Service</strong> → <strong>Users</strong></li>
+                        <li>Click on your username or create a new user</li>
+                        <li>Go to <strong>Security credentials</strong> tab</li>
+                        <li>Click <strong>Create access key</strong></li>
+                        <li>Select <strong>Application running outside AWS</strong></li>
+                        <li>Copy the <strong>Access Key</strong> and <strong>Secret Key</strong></li>
+                        <li><strong>Important:</strong> Save the Secret Key immediately (you won't see it again)</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <!-- IAM Policy for Students -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">Required IAM Permissions</h6>
+                </div>
+                <div class="card-body">
+                    <p class="small">When creating IAM user, attach this policy:</p>
+                    <pre class="bg-light p-2 small" style="max-height: 200px; overflow-y: auto;">{{ iam_policy|safe }}</pre>
+                    <div class="alert alert-warning small mt-2">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Note:</strong> This policy is permissive for learning. For production, use more restrictive policies.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Troubleshooting Section -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Troubleshooting Common Issues</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-key text-danger"></i> Invalid Credentials</h6>
+                                    <p class="small">Check that you copied the correct Access Key and Secret Key from AWS IAM.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-shield-alt text-warning"></i> Permission Denied</h6>
+                                    <p class="small">Ensure your IAM user has the required S3, Glue, and Athena permissions.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-globe text-info"></i> Region Issues</h6>
+                                    <p class="small">Make sure you select the correct AWS region where your resources are located.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const useRealAwsCheckbox = document.getElementById('id_use_real_aws');
+    const awsCredentialsSection = document.getElementById('aws-credentials-section');
+    const localModeSection = document.getElementById('local-mode-section');
+    
+    function toggleAWSSections() {
+        const isRealAWS = useRealAwsCheckbox.checked;
+        
+        if (isRealAWS) {
+            awsCredentialsSection.style.display = 'block';
+            localModeSection.style.display = 'none';
+            
+            // Enable required fields
+            document.getElementById('id_aws_access_key_id').required = true;
+            document.getElementById('id_aws_secret_access_key').required = true;
+        } else {
+            awsCredentialsSection.style.display = 'none';
+            localModeSection.style.display = 'block';
+            
+            // Disable required fields
+            document.getElementById('id_aws_access_key_id').required = false;
+            document.getElementById('id_aws_secret_access_key').required = false;
+        }
+    }
+    
+    useRealAwsCheckbox.addEventListener('change', toggleAWSSections);
+    toggleAWSSections(); // Initial state
+    
+    // Copy IAM policy to clipboard
+    document.getElementById('copy-iam-policy').addEventListener('click', function() {
+        const policyText = `{{ iam_policy|escapejs }}`;
+        navigator.clipboard.writeText(policyText).then(function() {
+            alert('IAM Policy copied to clipboard!');
+        });
+    });
+});
+</script>
+{% endblock %}

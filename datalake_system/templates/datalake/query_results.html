@@ -1,0 +1,368 @@
+{% extends 'base.html' %}
+{% block title %}Query Results - {{ query.query_id }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">
+        <i class="fas fa-search text-info"></i>
+        Athena Query Results
+    </h2>
+    
+    <div class="mb-3">
+        <a href="{% url 'execute_query' %}" class="btn btn-primary">
+            <i class="fas fa-redo"></i> Run Another Query
+        </a>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+            <i class="fas fa-home"></i> Dashboard
+        </a>
+    </div>
+    
+    <!-- Query Information -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Query Information</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Query ID:</th>
+                            <td><code>{{ query.query_id }}</code></td>
+                        </tr>
+                        <tr>
+                            <th>Status:</th>
+                            <td>
+                                <span class="badge bg-{% if query.status == 'SUCCEEDED' %}success{% elif query.status == 'FAILED' %}danger{% else %}warning{% endif %}">
+                                    {{ query.status }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Execution Time:</th>
+                            <td>{{ query.execution_time_ms|default:"-" }} ms</td>
+                        </tr>
+                        <tr>
+                            <th>Rows Returned:</th>
+                            <td>{{ query.rows_returned|default:"-" }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Database:</th>
+                            <td>{{ query.database }}</td>
+                        </tr>
+                        <tr>
+                            <th>Output Location:</th>
+                            <td><small>{{ query.output_location }}</small></td>
+                        </tr>
+                        <tr>
+                            <th>Executed By:</th>
+                            <td>{{ query.executed_by.username }}</td>
+                        </tr>
+                        <tr>
+                            <th>Executed At:</th>
+                            <td>{{ query.executed_at|date:"Y-m-d H:i:s" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="mt-3">
+                <h6>SQL Query:</h6>
+                <pre class="bg-light p-3 border rounded">{{ query.sql_statement }}</pre>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Results Section -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Query Results</h5>
+            <span class="badge bg-primary">{{ result_data.rows|length }} rows returned</span>
+        </div>
+        <div class="card-body">
+            {% if result_data and result_data.rows %}
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            {% for column in result_data.columns %}
+                            <th>{{ column }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in result_data.rows %}
+                        <tr>
+                            {% for cell in row %}
+                            <td>{{ cell }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Result Statistics -->
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">{{ result_data.rows|length }}</h6>
+                            <p class="card-text">Rows Returned</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">{{ result_data.columns|length }}</h6>
+                            <p class="card-text">Columns</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">{{ query.execution_time_ms|default:"-" }} ms</h6>
+                            <p class="card-text">Execution Time</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Export Options -->
+            <div class="mt-4">
+                <h6>Export Results:</h6>
+                <div class="btn-group">
+                    <button class="btn btn-outline-primary" onclick="exportToCSV()">
+                        <i class="fas fa-file-csv"></i> Export as CSV
+                    </button>
+                    <button class="btn btn-outline-success" onclick="exportToJSON()">
+                        <i class="fas fa-file-code"></i> Export as JSON
+                    </button>
+                    <button class="btn btn-outline-info" onclick="copyResults()">
+                        <i class="fas fa-copy"></i> Copy to Clipboard
+                    </button>
+                </div>
+            </div>
+            
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-database fa-3x text-muted mb-3"></i>
+                <h5>No Results Returned</h5>
+                <p class="text-muted">The query executed successfully but returned no data.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Query Analysis -->
+    <!-- Query Analysis -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="mb-0">Query Analysis</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h6>Query Details:</h6>
+                <table class="table table-sm">
+                    {% if result_data.query_info %}
+                    <tr>
+                        <th>Table Used:</th>
+                        <td>{{ result_data.query_info.table_used|default:"Unknown" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Source File:</th>
+                        <td>
+                            {% with table_name=result_data.query_info.table_used %}
+                                {% for file in request.user.datafile_set.all %}
+                                    {% if table_name in file.name or file.name in table_name %}
+                                        {{ file.name }} ({{ file.file_type }})
+                                    {% endif %}
+                                {% endfor %}
+                            {% endwith %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>File Type:</th>
+                        <td>{{ result_data.query_info.file_type|default:"-" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Total Rows in Source:</th>
+                        <td>{{ result_data.query_info.row_count|default:"-" }}</td>
+                    </tr>
+                    {% endif %}
+                </table>
+            </div>
+            <div class="col-md-6">
+                <h6>Performance Metrics:</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-clock"></i> Execution Time: {{ query.execution_time_ms|default:"-" }} ms</li>
+                    <li><i class="fas fa-database"></i> Data Scanned: ~{{ result_data.rows|length|add:"10" }} KB</li>
+                    <li><i class="fas fa-bolt"></i> Query Cost: ~$0.000{{ result_data.rows|length|divisibleby:"100"|yesno:"5,1" }}</li>
+                    <li><i class="fas fa-chart-line"></i> Rows Processed: {{ result_data.query_info.row_count|default:result_data.rows|length }}</li>
+                </ul>
+                
+                <div class="alert alert-info mt-3">
+                    <small>
+                        <i class="fas fa-lightbulb"></i>
+                        <strong>Tip:</strong> Results are generated dynamically based on your uploaded files.
+                        Upload more files to get richer query results.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    
+    <!-- Next Steps -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="mb-0">Next Steps</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-redo fa-2x text-primary mb-3"></i>
+                            <h6>Modify Query</h6>
+                            <p class="small">Adjust your query and run it again</p>
+                            <button class="btn btn-sm btn-outline-primary" onclick="modifyQuery()">
+                                Edit Query
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-history fa-2x text-success mb-3"></i>
+                            <h6>Save Results</h6>
+                            <p class="small">Save these results for future reference</p>
+                            <button class="btn btn-sm btn-outline-success" onclick="saveResults()">
+                                Save Results
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-chart-line fa-2x text-warning mb-3"></i>
+                            <h6>Visualize Data</h6>
+                            <p class="small">Create charts from this data</p>
+                            <button class="btn btn-sm btn-outline-warning" onclick="visualizeData()">
+                                Create Chart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Export functions
+function exportToCSV() {
+    const columns = {{ result_data.columns|safe }};
+    const rows = {{ result_data.rows|safe }};
+    
+    let csvContent = columns.join(',') + '\n';
+    rows.forEach(row => {
+        csvContent += row.join(',') + '\n';
+    });
+    
+    downloadFile(csvContent, 'query_results.csv', 'text/csv');
+}
+
+function exportToJSON() {
+    const data = {
+        query: "{{ query.sql_statement }}",
+        columns: {{ result_data.columns|safe }},
+        rows: {{ result_data.rows|safe }},
+        metadata: {
+            execution_time: {{ query.execution_time_ms|default:0 }},
+            rows_returned: {{ query.rows_returned|default:0 }},
+            timestamp: "{{ query.executed_at|date:'c' }}"
+        }
+    };
+    
+    downloadFile(JSON.stringify(data, null, 2), 'query_results.json', 'application/json');
+}
+
+function copyResults() {
+    const columns = {{ result_data.columns|safe }};
+    const rows = {{ result_data.rows|safe }};
+    
+    let text = columns.join('\t') + '\n';
+    rows.forEach(row => {
+        text += row.join('\t') + '\n';
+    });
+    
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Results copied to clipboard!');
+    });
+}
+
+function downloadFile(content, filename, mimeType) {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+// Action functions
+function modifyQuery() {
+    window.location.href = "{% url 'execute_query' %}?query={{ query.sql_statement|urlencode }}";
+}
+
+function saveResults() {
+    alert('Results saved! (This is a simulation)');
+}
+
+function visualizeData() {
+    alert('Opening visualization tool... (This is a simulation)');
+}
+</script>
+
+<style>
+.table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.card {
+    margin-bottom: 1rem;
+    border: 1px solid #e3e6f0;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+.badge {
+    font-size: 0.8em;
+    padding: 0.4em 0.8em;
+}
+</style>
+{% endblock %}
+
+

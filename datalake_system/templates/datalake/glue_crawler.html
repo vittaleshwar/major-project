@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% block title %}Glue Crawler{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">AWS Glue Crawler</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-spider"></i>
+                    <strong>Current Mode:</strong>
+                    {% if user.aws_config.use_real_aws %}
+                        <span class="badge bg-success">Real AWS Glue</span>
+                        Will run actual AWS Glue crawler
+                    {% else %}
+                        <span class="badge bg-info">Local Simulation</span>
+                        Simulating Glue crawler operations
+                    {% endif %}
+                </div>
+
+                <h5 class="mb-3">Run New Crawler</h5>
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="crawler_name" class="form-label">Crawler Name</label>
+                        <input type="text" class="form-control" id="crawler_name" name="crawler_name" 
+                               placeholder="my-data-crawler" required>
+                        <small class="form-text text-muted">
+                            Give your crawler a descriptive name
+                        </small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="bucket" class="form-label">S3 Bucket to Crawl</label>
+                        <select class="form-control" id="bucket" name="bucket" required>
+                            <option value="">-- Select a bucket --</option>
+                            {% for bucket in buckets %}
+                            <option value="{{ bucket.id }}">
+                                {{ bucket.name }} ({{ bucket.region }}) 
+                                {% if bucket.is_real_aws %}[AWS]{% else %}[Simulated]{% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <small class="form-text text-muted">
+                            Select which S3 bucket to crawl for data discovery
+                        </small>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">What a Glue Crawler Does:</h6>
+                            </div>
+                            <div class="card-body">
+                                <ol class="mb-0">
+                                    <li>Scans your S3 bucket for data files</li>
+                                    <li>Infers schema from the data</li>
+                                    <li>Creates/updates tables in Glue Data Catalog</li>
+                                    <li>Makes data queryable by Athena</li>
+                                    <li>Handles schema evolution automatically</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-warning btn-lg">
+                            <i class="fas fa-play"></i> Run Crawler
+                        </button>
+                        <a href="{% url 'dashboard' %}" class="btn btn-secondary btn-lg">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-info-circle"></i> AWS Glue Information</h6>
+            </div>
+            <div class="card-body">
+                <p><strong>Service:</strong> AWS Glue</p>
+                <p><strong>Purpose:</strong> Serverless data integration service</p>
+                <p><strong>Components:</strong></p>
+                <ul class="mb-0">
+                    <li><strong>Crawlers:</strong> Discover data</li>
+                    <li><strong>Data Catalog:</strong> Metadata repository</li>
+                    <li><strong>ETL Jobs:</strong> Transform data</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">Recent Crawlers</h6>
+            </div>
+            <div class="card-body">
+                {% if crawlers %}
+                <div class="list-group">
+                    {% for crawler in crawlers %}
+                    <a href="{% url 'crawler_results' crawler.id %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ crawler.name }}</h6>
+                            <span class="badge bg-{% if crawler.status == 'COMPLETED' %}success{% elif crawler.status == 'RUNNING' %}warning{% else %}secondary{% endif %}">
+                                {{ crawler.status }}
+                            </span>
+                        </div>
+                        <p class="mb-1">
+                            <small>Bucket: {{ crawler.bucket.name }}</small>
+                        </p>
+                        <small>
+                            {% if crawler.last_run %}
+                            Last run: {{ crawler.last_run|date:"Y-m-d H:i" }}
+                            {% else %}
+                            Never run
+                            {% endif %}
+                            {% if crawler.is_real_aws %}
+                            <span class="badge bg-success float-end">AWS</span>
+                            {% else %}
+                            <span class="badge bg-info float-end">SIM</span>
+                            {% endif %}
+                        </small>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted text-center">No crawlers run yet</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">How Glue Crawler Works</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded">
+                            <div class="mb-2">
+                                <i class="fas fa-folder fa-2x text-primary"></i>
+                            </div>
+                            <h6>1. S3 Bucket</h6>
+                            <p class="small">Raw data files in S3</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded">
+                            <div class="mb-2">
+                                <i class="fas fa-spider fa-2x text-warning"></i>
+                            </div>
+                            <h6>2. Crawler Runs</h6>
+                            <p class="small">Scans files and infers schema</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded">
+                            <div class="mb-2">
+                                <i class="fas fa-database fa-2x text-success"></i>
+                            </div>
+                            <h6>3. Data Catalog</h6>
+                            <p class="small">Creates table definitions</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded">
+                            <div class="mb-2">
+                                <i class="fas fa-search fa-2x text-info"></i>
+                            </div>
+                            <h6>4. Query Ready</h6>
+                            <p class="small">Data can be queried by Athena</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

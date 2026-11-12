@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% block title %}Upload File to S3{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    Upload File to S3 Bucket
+                </h4>
+            </div>
+            <div class="card-body">
+                {% if not buckets %}
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    You need to create an S3 bucket first before uploading files.
+                    <a href="{% url 'create_bucket' %}" class="alert-link">Create a bucket</a>
+                </div>
+                {% else %}
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="id_file" class="form-label">Select File</label>
+                        {{ form.file }}
+                        <small class="form-text text-muted">
+                            Supported formats: CSV, JSON, TXT (Max: 10MB)
+                        </small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_bucket" class="form-label">Choose S3 Bucket</label>
+                        {{ form.bucket }}
+                        <small class="form-text text-muted">
+                            Select which bucket to upload the file to
+                        </small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_description" class="form-label">Description (Optional)</label>
+                        {{ form.description }}
+                        <small class="form-text text-muted">
+                            Add a description of what this file contains
+                        </small>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">File Requirements</h6>
+                            </div>
+                            <div class="card-body">
+                                <ul class="mb-0">
+                                    <li>Maximum file size: 10MB</li>
+                                    <li>Supported formats: CSV, JSON, TXT</li>
+                                    <li>CSV files should have headers in first row</li>
+                                    <li>JSON files should be arrays of objects</li>
+                                    <li>Files will be analyzed automatically</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-upload"></i> Upload File
+                        </button>
+                        <a href="{% url 'dashboard' %}" class="btn btn-secondary btn-lg">Cancel</a>
+                    </div>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Sample files section -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-download"></i>
+                    Need Sample Files?
+                </h5>
+            </div>
+            <div class="card-body">
+                <p>Download these sample files to practice with:</p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <h6><i class="fas fa-file-csv text-primary"></i> Sales Data (CSV)</h6>
+                                <pre class="small bg-light p-2">sale_id,customer_id,product,amount,date
+1,101,"Laptop",1200.50,"2024-01-15"
+2,102,"Mouse",25.99,"2024-01-16"</pre>
+                                <a href="#" class="btn btn-sm btn-outline-primary" onclick="createSampleCSV()">
+                                    <i class="fas fa-download"></i> Create Sample
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <h6><i class="fas fa-file-code text-success"></i> Customer Data (JSON)</h6>
+                                <pre class="small bg-light p-2">[
+  {"id": 101, "name": "John"},
+  {"id": 102, "name": "Jane"}
+]</pre>
+                                <a href="#" class="btn btn-sm btn-outline-success" onclick="createSampleJSON()">
+                                    <i class="fas fa-download"></i> Create Sample
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-info-circle"></i>
+                    Upload Information
+                </h6>
+            </div>
+            <div class="card-body">
+                <p><strong>Simulated S3 Upload</strong></p>
+                <p>Files are stored locally and simulated as if they were in AWS S3.</p>
+                
+                <div class="alert alert-info">
+                    <small>
+                        <i class="fas fa-lightbulb"></i>
+                        <strong>Tip:</strong> For real AWS uploads, configure your AWS credentials in Settings.
+                    </small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-folder"></i>
+                    Your Buckets
+                </h6>
+            </div>
+            <div class="card-body">
+                {% if buckets %}
+                <div class="list-group">
+                    {% for bucket in buckets %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ bucket.name }}</h6>
+                            <small class="text-muted">{{ bucket.region }}</small>
+                        </div>
+                        <p class="mb-1 small">
+                            Files: {{ bucket.datafile_set.count }}
+                        </p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted text-center">No buckets yet</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// JavaScript to create sample files
+function createSampleCSV() {
+    const csvContent = "sale_id,customer_id,product,quantity,price,total_amount,region,sale_date,payment_method\n" +
+                      "1,1001,Laptop,1,1200.50,1200.50,North,2024-01-15,Credit Card\n" +
+                      "2,1002,Mouse,2,25.99,51.98,South,2024-01-16,Debit Card\n" +
+                      "3,1003,Keyboard,1,89.99,89.99,East,2024-01-17,PayPal\n" +
+                      "4,1004,Monitor,1,299.99,299.99,West,2024-01-18,Credit Card\n" +
+                      "5,1005,Tablet,1,499.99,499.99,North,2024-01-19,Cash";
+    
+    downloadFile(csvContent, 'sales_data.csv', 'text/csv');
+}
+
+function createSampleJSON() {
+    const jsonContent = JSON.stringify([
+        {
+            "customer_id": 1001,
+            "name": "John Doe",
+            "email": "john@example.com",
+            "city": "New York",
+            "join_date": "2023-12-01",
+            "membership": "Gold"
+        },
+        {
+            "customer_id": 1002,
+            "name": "Jane Smith",
+            "email": "jane@example.com",
+            "city": "Los Angeles",
+            "join_date": "2024-01-05",
+            "membership": "Silver"
+        },
+        {
+            "customer_id": 1003,
+            "name": "Bob Johnson",
+            "email": "bob@example.com",
+            "city": "Chicago",
+            "join_date": "2024-01-10",
+            "membership": "Platinum"
+        }
+    ], null, 2);
+    
+    downloadFile(jsonContent, 'customers.json', 'application/json');
+}
+
+function downloadFile(content, filename, mimeType) {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    alert(`Sample file '${filename}' created! You can now upload it.`);
+}
+</script>
+{% endblock %}

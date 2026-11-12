@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %}Execute Query{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">
+        <i class="fas fa-search"></i>
+        Execute Athena Query
+    </h2>
+    
+    <div class="mb-3">
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">SQL Query</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="sql_statement" class="form-label">Enter your SQL query:</label>
+                            <textarea name="sql_statement" id="sql_statement" 
+                                      class="form-control" rows="8" 
+                                      placeholder="SELECT * FROM table_name LIMIT 10;">{{ initial_query }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="database" class="form-label">Database:</label>
+                            <input type="text" name="database" id="database" 
+                                   class="form-control" value="data_lake_db">
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-play"></i> Execute Query
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Query Examples</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Basic Queries:</h6>
+                    <div class="mb-3">
+                        <button class="btn btn-sm btn-outline-primary w-100 mb-2" 
+                                onclick="setQuery('SELECT * FROM sales_data LIMIT 10;')">
+                            Select All Rows
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary w-100 mb-2" 
+                                onclick="setQuery('SELECT COUNT(*) as total_rows FROM sales_data;')">
+                            Count Rows
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary w-100 mb-2" 
+                                onclick="setQuery('SELECT DISTINCT region FROM sales_data;')">
+                            Distinct Values
+                        </button>
+                    </div>
+                    
+                    <h6>Aggregation:</h6>
+                    <div class="mb-3">
+                        <button class="btn btn-sm btn-outline-success w-100 mb-2" 
+                                onclick="setQuery('SELECT region, SUM(amount) as total_sales FROM sales_data GROUP BY region;')">
+                            Group By
+                        </button>
+                        <button class="btn btn-sm btn-outline-success w-100 mb-2" 
+                                onclick="setQuery('SELECT AVG(amount) as average_sale FROM sales_data;')">
+                            Average
+                        </button>
+                    </div>
+                    
+                    <h6>Filtering:</h6>
+                    <div class="mb-3">
+                        <button class="btn btn-sm btn-outline-warning w-100 mb-2" 
+                                onclick="setQuery('SELECT * FROM sales_data WHERE amount > 100;')">
+                            Where Clause
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning w-100 mb-2" 
+                                onclick="setQuery('SELECT * FROM sales_data ORDER BY date DESC LIMIT 10;')">
+                            Order By
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function setQuery(query) {
+    document.getElementById('sql_statement').value = query;
+}
+</script>
+{% endblock %}

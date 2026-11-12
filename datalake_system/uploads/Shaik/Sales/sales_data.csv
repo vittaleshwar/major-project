@@ -1,0 +1,101 @@
+sale_id,customer_id,product,quantity,price,total_amount,region,sale_date,payment_method
+1,1100,Headphones,5,1910.06,9550.3,West,2025-12-16,Credit Card
+2,1015,Mouse,3,853.6,2560.8,North,2025-12-31,Debit Card
+3,1093,Phone,3,851.49,2554.47,East,2025-12-26,Debit Card
+4,1089,Headphones,2,543.87,1087.74,East,2025-12-17,PayPal
+5,1059,Phone,4,549.21,2196.84,South,2025-12-20,Cash
+6,1012,Monitor,2,1756.14,3512.28,South,2026-01-13,Debit Card
+7,1015,Laptop,1,1531.87,1531.87,North,2026-01-07,Debit Card
+8,1047,Laptop,4,1491.09,5964.36,South,2026-01-12,Credit Card
+9,1079,Tablet,2,632.01,1264.02,East,2025-12-20,Cash
+10,1044,Headphones,1,33.85,33.85,West,2025-12-16,Debit Card
+11,1043,Headphones,1,1437.94,1437.94,North,2025-12-18,PayPal
+12,1021,Tablet,4,1865.85,7463.4,South,2026-01-03,Debit Card
+13,1020,Headphones,2,695.56,1391.12,South,2025-12-16,Credit Card
+14,1090,Keyboard,1,813.29,813.29,East,2026-01-01,Cash
+15,1085,Tablet,4,1902.09,7608.36,West,2025-12-21,Cash
+16,1065,Tablet,3,893.23,2679.69,East,2025-12-24,Cash
+17,1054,Tablet,3,707.33,2121.99,West,2025-12-25,Debit Card
+18,1050,Tablet,4,1481.48,5925.92,West,2025-12-30,Credit Card
+19,1038,Tablet,3,1785.95,5357.85,East,2025-12-16,Credit Card
+20,1080,Laptop,5,966.85,4834.25,East,2026-01-09,Cash
+21,1037,Keyboard,1,1875.6,1875.6,East,2025-12-30,PayPal
+22,1031,Monitor,3,965.23,2895.69,West,2025-12-20,Cash
+23,1032,Laptop,3,1199.51,3598.53,East,2026-01-09,Cash
+24,1003,Headphones,5,562.14,2810.7,West,2026-01-02,PayPal
+25,1047,Tablet,1,1543.97,1543.97,West,2026-01-09,PayPal
+26,1025,Keyboard,1,1613.4,1613.4,East,2025-12-27,Credit Card
+27,1028,Phone,3,72.86,218.58,South,2025-12-27,Credit Card
+28,1029,Tablet,1,1740.44,1740.44,West,2026-01-07,PayPal
+29,1050,Keyboard,5,22.46,112.3,North,2026-01-08,Debit Card
+30,1098,Laptop,3,277.88,833.64,South,2026-01-04,Credit Card
+31,1000,Mouse,5,1682.3,8411.5,South,2025-12-16,Cash
+32,1098,Headphones,1,1973.92,1973.92,East,2025-12-31,PayPal
+33,1078,Keyboard,2,161.58,323.16,East,2025-12-19,Debit Card
+34,1071,Tablet,4,72.65,290.6,South,2026-01-07,Credit Card
+35,1069,Mouse,3,573.52,1720.56,South,2025-12-19,Debit Card
+36,1094,Phone,1,458.46,458.46,West,2026-01-01,Cash
+37,1025,Laptop,3,1675.56,5026.68,East,2025-12-29,Cash
+38,1030,Mouse,2,1738.68,3477.36,South,2025-12-23,Cash
+39,1020,Laptop,3,1358.01,4074.03,South,2025-12-30,Credit Card
+40,1064,Headphones,4,1534.78,6139.12,North,2025-12-22,Credit Card
+41,1015,Mouse,5,388.74,1943.7,East,2025-12-28,Cash
+42,1021,Keyboard,1,261.2,261.2,North,2025-12-26,Credit Card
+43,1035,Phone,4,349.6,1398.4,West,2025-12-20,PayPal
+44,1086,Tablet,3,816.37,2449.11,South,2026-01-14,Debit Card
+45,1081,Mouse,1,879.66,879.66,West,2025-12-16,PayPal
+46,1067,Phone,2,777.14,1554.28,North,2025-12-24,Credit Card
+47,1009,Phone,1,146.32,146.32,South,2025-12-22,Debit Card
+48,1054,Phone,2,76.89,153.78,West,2026-01-09,PayPal
+49,1092,Laptop,5,911.62,4558.1,South,2025-12-17,Credit Card
+50,1039,Headphones,5,1288.31,6441.55,East,2026-01-02,PayPal
+51,1090,Keyboard,2,1919.99,3839.98,East,2026-01-02,Credit Card
+52,1043,Tablet,3,1618.14,4854.42,North,2025-12-26,Credit Card
+53,1009,Headphones,4,1251.84,5007.36,South,2025-12-24,Cash
+54,1073,Laptop,3,178.7,536.1,East,2025-12-25,Cash
+55,1097,Phone,3,383.88,1151.64,East,2025-12-24,Debit Card
+56,1028,Monitor,1,1022.42,1022.42,East,2026-01-09,Cash
+57,1006,Laptop,3,1065.12,3195.36,East,2025-12-23,Credit Card
+58,1065,Mouse,4,404.31,1617.24,East,2026-01-08,Cash
+59,1053,Laptop,2,1961.71,3923.42,North,2025-12-20,Debit Card
+60,1052,Laptop,4,1632.59,6530.36,North,2025-12-31,Credit Card
+61,1027,Tablet,5,846.08,4230.4,South,2025-12-29,PayPal
+62,1014,Tablet,3,994.17,2982.51,North,2026-01-09,Cash
+63,1062,Tablet,2,629.99,1259.98,North,2026-01-13,PayPal
+64,1094,Keyboard,4,1232.45,4929.8,South,2025-12-18,Credit Card
+65,1050,Laptop,5,482.95,2414.75,West,2025-12-29,Credit Card
+66,1076,Monitor,5,1981.35,9906.75,East,2026-01-04,PayPal
+67,1036,Mouse,5,1995.03,9975.15,East,2026-01-13,PayPal
+68,1098,Tablet,5,1969.06,9845.3,West,2025-12-29,Debit Card
+69,1015,Mouse,4,27.22,108.88,South,2026-01-03,Credit Card
+70,1062,Headphones,2,350.5,701.0,South,2026-01-06,Cash
+71,1100,Phone,3,326.88,980.64,West,2026-01-05,Debit Card
+72,1089,Keyboard,4,374.09,1496.36,East,2025-12-26,Credit Card
+73,1069,Keyboard,2,695.19,1390.38,North,2025-12-19,Cash
+74,1086,Laptop,3,1671.73,5015.19,North,2025-12-29,PayPal
+75,1096,Laptop,5,1980.31,9901.55,West,2026-01-10,Cash
+76,1029,Monitor,5,1182.36,5911.8,East,2026-01-02,Credit Card
+77,1008,Phone,5,1102.25,5511.25,North,2025-12-22,Credit Card
+78,1057,Headphones,2,1437.22,2874.44,North,2025-12-22,Debit Card
+79,1046,Headphones,1,1389.32,1389.32,South,2025-12-22,PayPal
+80,1056,Monitor,3,488.03,1464.09,North,2025-12-23,Cash
+81,1017,Headphones,4,1121.43,4485.72,North,2025-12-16,Debit Card
+82,1054,Headphones,1,1180.21,1180.21,South,2026-01-10,Credit Card
+83,1067,Laptop,1,1374.28,1374.28,West,2026-01-11,Credit Card
+84,1031,Phone,4,1931.12,7724.48,South,2026-01-13,Credit Card
+85,1022,Laptop,5,1781.51,8907.55,North,2025-12-20,Cash
+86,1038,Laptop,4,1162.42,4649.68,South,2026-01-03,Cash
+87,1093,Mouse,3,279.21,837.63,East,2025-12-28,Debit Card
+88,1086,Laptop,3,1869.97,5609.91,West,2025-12-25,Credit Card
+89,1100,Keyboard,1,793.05,793.05,West,2025-12-16,Cash
+90,1062,Tablet,5,687.51,3437.55,South,2026-01-09,Debit Card
+91,1050,Keyboard,1,273.36,273.36,East,2026-01-13,Debit Card
+92,1047,Laptop,4,1727.4,6909.6,East,2025-12-17,PayPal
+93,1057,Keyboard,2,596.17,1192.34,West,2025-12-23,Debit Card
+94,1073,Tablet,4,961.37,3845.48,West,2025-12-23,PayPal
+95,1082,Laptop,5,141.75,708.75,North,2025-12-27,PayPal
+96,1048,Mouse,1,197.0,197.0,East,2025-12-26,Credit Card
+97,1039,Headphones,1,607.91,607.91,East,2025-12-17,PayPal
+98,1068,Headphones,5,201.5,1007.5,North,2026-01-07,Debit Card
+99,1063,Headphones,4,17.8,71.2,West,2026-01-04,Cash
+100,1014,Monitor,1,1504.41,1504.41,South,2025-12-25,Credit Card
